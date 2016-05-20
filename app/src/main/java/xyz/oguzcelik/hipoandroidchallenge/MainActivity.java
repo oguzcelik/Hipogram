@@ -9,11 +9,13 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
+
+import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import xyz.oguzcelik.hipoandroidchallenge.POJO.Datum;
 import xyz.oguzcelik.hipoandroidchallenge.POJO.Post;
 import xyz.oguzcelik.hipoandroidchallenge.Service.InstagramRestAdapter;
 
@@ -63,7 +65,9 @@ public class MainActivity extends AppCompatActivity implements Callback<Post> {
 
     @Override
     public void onResponse(Call<Post> call, Response<Post> response) {
-        Toast.makeText(getApplicationContext(),"Call successfull !",Toast.LENGTH_SHORT).show();
+        List<Datum> data = response.body().getData();
+        ImageAdapter imageAdapter = new ImageAdapter(getApplicationContext(),data);
+        recyclerView.setAdapter(imageAdapter);
     }
 
     @Override
