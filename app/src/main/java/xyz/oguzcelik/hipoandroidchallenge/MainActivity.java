@@ -9,7 +9,6 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import retrofit2.Call;
@@ -21,7 +20,6 @@ import xyz.oguzcelik.hipoandroidchallenge.Service.InstagramRestAdapter;
 public class MainActivity extends AppCompatActivity implements Callback<Post> {
     RecyclerView recyclerView;
     private static final String ACCESS_TOKEN = "8b197f774ece48b2b429ae1f542719a7";
-    TextView testText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +30,6 @@ public class MainActivity extends AppCompatActivity implements Callback<Post> {
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(),3);
         recyclerView.setLayoutManager(gridLayoutManager);
-        testText = (TextView) findViewById(R.id.testText);
     }
 
     @Override
@@ -67,8 +64,6 @@ public class MainActivity extends AppCompatActivity implements Callback<Post> {
     @Override
     public void onResponse(Call<Post> call, Response<Post> response) {
         Toast.makeText(getApplicationContext(),"Call successfull !",Toast.LENGTH_SHORT).show();
-        testText.setText(""+response.body().getData().get(0).getImages().getLowResolution().getUrl()
-        );
     }
 
     @Override
