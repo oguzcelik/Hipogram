@@ -20,8 +20,14 @@ import xyz.oguzcelik.hipoandroidchallenge.POJO.Post;
 import xyz.oguzcelik.hipoandroidchallenge.Service.InstagramRestAdapter;
 
 public class MainActivity extends AppCompatActivity implements Callback<Post> {
-    RecyclerView recyclerView;
     private static final String ACCESS_TOKEN = "8b197f774ece48b2b429ae1f542719a7";
+
+    private String lastQuery;
+    private List<Datum> data;
+    private boolean isNewSearch;
+    private String maxTagId;
+
+    RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,9 +35,20 @@ public class MainActivity extends AppCompatActivity implements Callback<Post> {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        isNewSearch = true;
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(),3);
+        final GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(),3);
         recyclerView.setLayoutManager(gridLayoutManager);
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                if(gridLayoutManager.findLastCompletelyVisibleItemPosition()
+                        == gridLayoutManager.getItemCount() - 1) {
+                    loadPhotosForTag(lastQuery);
+                }
+            }
+        });
     }
 
     @Override
@@ -44,7 +61,9 @@ public class MainActivity extends AppCompatActivity implements Callback<Post> {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                // will do something
+                if(lastQuery!=null && !lastQuery.equals(query)) {
+                    isNewSearch=true;
+                }
                 loadPhotosForTag(query);
                 return false;
             }
@@ -59,15 +78,29 @@ public class MainActivity extends AppCompatActivity implements Callback<Post> {
 
     private void loadPhotosForTag(String tag) {
         InstagramRestAdapter instagramRestAdapter = new InstagramRestAdapter();
-        Call<Post> call = instagramRestAdapter.getApi().getResponse(tag,ACCESS_TOKEN);
+        Call<Post> call;
+        if(lastQuery!= null && lastQuery.equals(tag)) {
+            isNewSearch = false;
+            call = instagramRestAdapter.getApi().getPaginatedResponse(tag,ACCESS_TOKEN,maxTagId);
+        } else {
+            lastQuery = tag;
+            call = instagramRestAdapter.getApi().getResponse(tag,ACCESS_TOKEN);
+        }
         call.enqueue(this);
     }
 
     @Override
     public void onResponse(Call<Post> call, Response<Post> response) {
-        List<Datum> data = response.body().getData();
-        ImageAdapter imageAdapter = new ImageAdapter(getApplicationContext(),data);
-        recyclerView.setAdapter(imageAdapter);
+        if(isNewSearch) {
+            data = response.body().getData();
+            ImageAdapter imageAdapter = new ImageAdapter(getApplicationContext(),data);
+            recyclerView.setAdapter(imageAdapter);
+        } else {
+            data.addAll(response.body().getData());
+            recyclerView.getAdapter().notifyDataSetChanged();
+        }
+        maxTagId = response.body().getPagination().getNextMaxTagId();
+
     }
 
     @Override

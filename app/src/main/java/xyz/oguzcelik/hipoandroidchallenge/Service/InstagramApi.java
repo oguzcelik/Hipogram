@@ -13,4 +13,10 @@ public interface InstagramApi {
     @GET("/v1/tags/{tag-name}/media/recent")
     Call<Post> getResponse(@Path("tag-name") String tagName
             , @Query("client_id") String accessToken);
+
+    @GET("/v1/tags/{tag-name}/media/recent")
+    Call<Post> getPaginatedResponse(@Path("tag-name") String tagName
+            , @Query("client_id") String accessToken
+            , @Query("max_tag_id") String maxTagId);
+
 }
