@@ -9,22 +9,26 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import xyz.oguzcelik.hipoandroidchallenge.POJO.Datum;
-import xyz.oguzcelik.hipoandroidchallenge.POJO.Post;
-import xyz.oguzcelik.hipoandroidchallenge.Service.InstagramRestAdapter;
+import xyz.oguzcelik.hipoandroidchallenge.model.Datum;
+import xyz.oguzcelik.hipoandroidchallenge.model.Post;
+import xyz.oguzcelik.hipoandroidchallenge.service.InstagramRestAdapter;
 
 public class MainActivity extends AppCompatActivity implements Callback<Post> {
     private static final String ACCESS_TOKEN = "8b197f774ece48b2b429ae1f542719a7";
+    private final int GRID_SIZE = 3;
 
     private String lastQuery;
     private List<Datum> data;
-    private boolean isNewSearch;
+    private boolean isNewSearch = true;
     private String maxTagId;
 
     RecyclerView recyclerView;
@@ -35,9 +39,12 @@ public class MainActivity extends AppCompatActivity implements Callback<Post> {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        isNewSearch = true;
+
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        final GridLayoutManager gridLayoutManager = new GridLayoutManager(getApplicationContext(),3);
+
+
+        final GridLayoutManager gridLayoutManager =
+                new GridLayoutManager(getApplicationContext(),GRID_SIZE);
         recyclerView.setLayoutManager(gridLayoutManager);
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -50,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements Callback<Post> {
             }
         });
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -81,10 +89,10 @@ public class MainActivity extends AppCompatActivity implements Callback<Post> {
         Call<Post> call;
         if(lastQuery!= null && lastQuery.equals(tag)) {
             isNewSearch = false;
-            call = instagramRestAdapter.getApi().getPaginatedResponse(tag,ACCESS_TOKEN,maxTagId);
+            call = instagramRestAdapter.getInstagramApiPaginatedResponse(tag,ACCESS_TOKEN,maxTagId);
         } else {
             lastQuery = tag;
-            call = instagramRestAdapter.getApi().getResponse(tag,ACCESS_TOKEN);
+            call = instagramRestAdapter.getInstagramApiResponse(tag,ACCESS_TOKEN);
         }
         call.enqueue(this);
     }
@@ -93,18 +101,19 @@ public class MainActivity extends AppCompatActivity implements Callback<Post> {
     public void onResponse(Call<Post> call, Response<Post> response) {
         if(isNewSearch) {
             data = response.body().getData();
-            ImageAdapter imageAdapter = new ImageAdapter(getApplicationContext(),data);
+            ImageAdapter imageAdapter = new ImageAdapter(getApplicationContext());
+            imageAdapter.setDataList(data);
             recyclerView.setAdapter(imageAdapter);
         } else {
             data.addAll(response.body().getData());
             recyclerView.getAdapter().notifyDataSetChanged();
         }
-        maxTagId = response.body().getPagination().getNextMaxTagId();
-
+        maxTagId = response.body().getPaginationNextMaxTagId();
     }
 
     @Override
     public void onFailure(Call<Post> call, Throwable t) {
-
+        Toast.makeText(getApplicationContext(),"Could'nt load images",Toast.LENGTH_SHORT).show();
+        lastQuery="";
     }
 }

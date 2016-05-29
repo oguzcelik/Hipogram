@@ -11,8 +11,8 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
-import xyz.oguzcelik.hipoandroidchallenge.POJO.Datum;
-import xyz.oguzcelik.hipoandroidchallenge.POJO.Images;
+import xyz.oguzcelik.hipoandroidchallenge.model.Datum;
+import xyz.oguzcelik.hipoandroidchallenge.model.Images;
 
 /**
  * Created by Cynapsis on 5/20/2016.
@@ -21,9 +21,13 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
     private List<Datum> images;
     private Context context;
 
-    public ImageAdapter(Context context, List<Datum> images) {
-        this.images = images;
+    public ImageAdapter(Context context) {
         this.context = context;
+    }
+
+    public void setDataList(List<Datum> images) {
+        this.images = images;
+        this.notifyDataSetChanged();
     }
 
     @Override
@@ -36,7 +40,7 @@ public class ImageAdapter extends RecyclerView.Adapter<ImageAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Images image = images.get(position).getImages();
-        Picasso.with(context).load(image.getLowResolution().getUrl()).into(holder.imageView);
+        Picasso.with(context).load(image.getLowResolutionUrl()).into(holder.imageView);
     }
 
     @Override

@@ -1,5 +1,5 @@
 
-package xyz.oguzcelik.hipoandroidchallenge.POJO;
+package xyz.oguzcelik.hipoandroidchallenge.model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +17,11 @@ public class Post {
     @SerializedName("data")
     @Expose
     private List<Datum> data = new ArrayList<Datum>();
+
+
+    public String getPaginationNextMaxTagId() {
+        return pagination.getNextMaxTagId();
+    }
 
     /**
      * 

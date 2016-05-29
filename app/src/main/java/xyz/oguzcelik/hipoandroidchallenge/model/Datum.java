@@ -1,5 +1,5 @@
 
-package xyz.oguzcelik.hipoandroidchallenge.POJO;
+package xyz.oguzcelik.hipoandroidchallenge.model;
 
 import java.util.ArrayList;
 import java.util.List;

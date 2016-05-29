@@ -1,10 +1,10 @@
 
-package xyz.oguzcelik.hipoandroidchallenge.POJO;
+package xyz.oguzcelik.hipoandroidchallenge.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Thumbnail {
+public class LowResolution {
 
     @SerializedName("url")
     @Expose

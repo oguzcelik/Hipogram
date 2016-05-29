@@ -1,7 +1,9 @@
-package xyz.oguzcelik.hipoandroidchallenge.Service;
+package xyz.oguzcelik.hipoandroidchallenge.service;
 
+import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import xyz.oguzcelik.hipoandroidchallenge.model.Post;
 
 /**
  * Created by Cynapsis on 5/18/2016.
@@ -25,4 +27,14 @@ public class InstagramRestAdapter {
     public InstagramApi getApi() {
         return api;
     }
+
+    public Call<Post> getInstagramApiResponse(String tag, String accessToken) {
+        return api.getResponse(tag,accessToken);
+    }
+
+    public Call<Post> getInstagramApiPaginatedResponse(String tag, String accessToken, String maxTagId) {
+        return api.getPaginatedResponse(tag,accessToken,maxTagId);
+    }
+
+
 }
