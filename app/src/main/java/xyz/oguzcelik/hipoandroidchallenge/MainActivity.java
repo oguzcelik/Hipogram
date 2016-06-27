@@ -23,7 +23,7 @@ import xyz.oguzcelik.hipoandroidchallenge.model.Post;
 import xyz.oguzcelik.hipoandroidchallenge.service.InstagramRestAdapter;
 
 public class MainActivity extends AppCompatActivity implements Callback<Post> {
-    private static final String ACCESS_TOKEN = "8b197f774ece48b2b429ae1f542719a7";
+    private static final String ACCESS_TOKEN = "YOUR_ACCESS_TOKEN";
     private final int GRID_SIZE = 3;
 
     private String lastQuery;
